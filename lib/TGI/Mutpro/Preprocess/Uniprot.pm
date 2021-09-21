@@ -12,6 +12,9 @@ use strict;
 use warnings;
 
 use LWP::Simple;
+use LWP::UserAgent;
+our $ua = LWP::UserAgent->new;
+$ua->env_proxy; # initialize from environment variables
 use Carp;
 #
 #  Stores the text version of a Uniprot entry downloaded
@@ -45,7 +48,8 @@ sub retrieveRecordFromUniprot {
     my $self = shift;
     my $uniprotId = $self->uniprotId();
     my $uniProtUrl = "http://www.uniprot.org/uniprot/$uniprotId.txt";
-    my $page = get($uniProtUrl);
+    my $req = HTTP::Request->new(GET => $uniProtUrl);
+    my $page = $ua->request($req)->content;
     if ( !defined $page ) { $page = "empty"; }
     $self->{PAGE} = $page;
 }

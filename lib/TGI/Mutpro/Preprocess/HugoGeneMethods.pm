@@ -14,8 +14,11 @@ our $VERSION = '0.3';
 
 use Carp;
 use LWP::Simple;
+use LWP::UserAgent;
+our $ua = LWP::UserAgent->new;
+$ua->env_proxy; # initialize from environment variables
 use TGI::Mutpro::Preprocess::HugoGene;
-my $HugoUrl = "https://www.genenames.org/cgi-bin/hgnc_downloads?".
+my $HugoUrl = "https://www.genenames.org/cgi-bin/download/custom?".
     "title=HGNC+output+data&hgnc_dbtag=on&".
     "col=gd_hgnc_id&".
     "col=gd_app_sym&".
@@ -116,12 +119,13 @@ sub makeHugoGeneObjects {
     # 33. UCSC ID (mapped data supplied by UCSC) 
 	my $list = shift;
     my %hugo_objects;
-    my $page = get($HugoUrl);
+    my $req = HTTP::Request->new(GET => $HugoUrl);
+    my $page = $ua->request($req)->content;
 	if ( not $page ) {
 		die "HotSpot3D::HugoGeneMethods::makeHugoGeneObjects ERROR: no data from url request. Installing Mozilla::CA might fix this issue\n";
 	}
     foreach my $line (split /\n/, $page) {
-		if ($line =~ /withdrawn/i || $line =~ /HGNC ID\s+Approved\s+Symbol\s+/) { next; }
+		if ($line =~ /withdrawn/i || $line =~ /HGNC ID\s+Approved\s+Symbol\s+/i) { next; }
 		my @entries = split /\t/, $line;
 		my $hugo = $entries[1];
 		$hugo =~ s/\s+//g;
@@ -187,9 +191,10 @@ sub downloadPreviousHugoSymbols {
     #  return (\%previousToHugo, \%hugoToPrevious);
     # The previous symbol(s) are in $entries[6]
     my (%previousToHugo, %hugoToPrevious, $previous,);
-    my $page = get($HugoUrl);
+    my $req = HTTP::Request->new(GET => $HugoUrl);
+    my $page = $ua->request($req)->content;
     foreach my $line (split /\n/, $page) {
-	if ( $line =~ /withdrawn/i || $line =~ /HGNC ID\s+Approved\s+Symbol\s+/ ) { next; }
+	if ( $line =~ /withdrawn/i || $line =~ /HGNC ID\s+Approved\s+Symbol\s+/i ) { next; }
 	my @entries = split /\t/, $line;
 	if ( !defined $entries[5] || $entries[5] eq "" ) { next; }
 	foreach $previous ( split /\s+/, $entries[5] ) {
@@ -229,9 +234,10 @@ sub downloadHugoAlias {
     #   return (\%aliasToHugo, \%hugoToAlias);
     # The aliases are in $entries[7], the Hugo name is in $entries[1]
     my ( %aliasToHugo, %hugoToAlias, $alias );
-    my $page = get($HugoUrl);
+    my $req = HTTP::Request->new(GET => $HugoUrl);
+    my $page = $ua->request($req)->content;
     foreach my $line (split /\n/, $page) {
-	if ( $line =~ /withdrawn/i || $line =~ /HGNC ID\s+Approved\s+Symbol\s+/ ) { next; }
+	if ( $line =~ /withdrawn/i || $line =~ /HGNC ID\s+Approved\s+Symbol\s+/i ) { next; }
 	my @entries = split /\t/, $line;
 	# The Hugo name is the second array element and the Uniprot name is the 29th array element
 	if ( !defined $entries[7] || $entries[7] eq "" ) { next; }

@@ -15,6 +15,9 @@ use Carp;
 use Cwd;
 use Getopt::Long;
 use LWP::Simple;
+use LWP::UserAgent;
+our $ua = LWP::UserAgent->new;
+$ua->env_proxy; # initialize from environment variables
 use IO::File;
 use FileHandle;
 
@@ -53,7 +56,8 @@ sub process {
     # drug name and ids
     my %drug_hash = ();
     my $appdrugs_url = "http://www.ebi.ac.uk/thornton-srv/databases/drugport/data/appdrugs_pdb.dat";
-    $this->{'page'} = get( $appdrugs_url );
+    my $req = HTTP::Request->new(GET => $appdrugs_url);
+    $this->{'page'} = $ua->request($req)->content;
     unless( $this->{'page'} ) { die "can not access drugport database file $! \n"; }
     my ($drug, $did);
     map { @_ = split / /; if ( /^GENERIC_NAME/ ) { $drug = $_[1] }; if ( /^DRUGNAME_ID/ ) { $did = $_[1]; $drug_hash{$did}{'name'} = $drug } } split /\n/, $this->{'page'};
@@ -67,7 +71,8 @@ sub process {
         print STDOUT $drug_name."\t".$id."\n";
         my ($t2n) = $_ =~ /(\d\d)$/;
         my $drugdata_url = "http://www.ebi.ac.uk/thornton-srv/databases/drugport/drugs/$t2n/$_/database.dat";
-        $this->{'page'} = get( $drugdata_url );
+        my $req2 = HTTP::Request->new(GET => $drugdata_url);
+        $this->{'page'} = $ua->request($req2)->content;
         unless( $this->{'page'} ) { die "can not access drug data file $! \n"; }
         my @filter = grep /^HET_GROUP|^TARGET_PDB_ID|^TARGET_CHAIN_ID|^TARGET_DRUG_IN_PDB|^UNASSIGNED_PDB_ID|^UNASSIGNED_CHAIN_ID/, split /\n/, $this->{'page'};
         my ( $het, %ss, %unified, @t, $name, $index, $chain, );
@@ -135,7 +140,8 @@ sub process {
                         @pdb_infor = map{ chomp; $_ } `cat $t_pdb_f`;
                     } else {
                         my $pdb_url = "http://www.rcsb.org/pdb/files/$pdb_file_name";
-                        $this->{'page'} = get( $pdb_url );
+                        my $req = HTTP::Request->new(GET => $pdb_url);
+                        $this->{'page'} = $ua->request($req)->content;
                         if ( $this->{'page'} ) {
                             @pdb_infor = split /\n/, $this->{'page'};
                         } else { warn "can not access pdb file $! \n"; } 

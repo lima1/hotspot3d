@@ -17,6 +17,9 @@ use warnings;
 
 use Carp;
 use LWP::Simple;
+use LWP::UserAgent;
+our $ua = LWP::UserAgent->new;
+$ua->env_proxy; # initialize from environment variables
 use Data::Dumper;
 
 use TGI::Mutpro::Preprocess::Peptide;
@@ -47,7 +50,8 @@ sub retrieveStructureFromPdb {
     my $self = shift;
     my $pdbId = $self->pdbId();
     my $pdbUrl = "http://www.rcsb.org/pdb/files/$pdbId.pdb"; 
-    $self->{PAGE} = get($pdbUrl);
+    my $req = HTTP::Request->new(GET => $pdbUrl);
+    $self->{PAGE} = $ua->request($req)->content;
 }
 
 sub localPdbFile {
