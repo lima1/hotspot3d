@@ -151,7 +151,8 @@ sub domains {
     map{ $skipList{$_} = 1; } @skipThese;
     foreach $line (split /\n/, $self->entireRecord()) {
 	chomp $line;
-	if ($line =~ /FT\s+(\S+)\s+(\d+)\s+(\d+)\s+(.*)/ && $stop >= $2 && $start <= $3 ) { 
+	#if ($line =~ /FT\s+(\S+)\s+(\d+)\s+(\d+)\s+(.*)/ && $stop >= $2 && $start <= $3 ) { 
+	if ($line =~  /FT\s+(\S+)\s+(\d+)[\s.]+(\d+)\s*(.*)/ && $stop >= $2 && $start <= $3 ) { 
 	    $key = $1; $dmStart = $2; $dmStop = $3; $desc = $4;
 	    next if ( defined $skipList{$key} );
 	    push @domains, "$key\t($dmStart, $dmStop)\t$desc";
@@ -176,7 +177,8 @@ sub domainsForMultiplePositions {
     map{ $skipList{$_} = 1; } @skipThese;
     foreach $line ( split /\n/, $self->entireRecord() ) {
         chomp $line;
-	if ( $line =~ /FT\s+(\S+)\s+(\d+)\s+(\d+)\s+(.*)/ && !defined $skipList{$1} ) {
+	#if ( $line =~ /FT\s+(\S+)\s+(\d+)\s+(\d+)\s+(.*)/ && !defined $skipList{$1} ) {
+	    if ( $line =~ /FT\s+(\S+)\s+(\d+)[\s.]+(\d+)\s*(.*)/  && !defined $skipList{$1} ) {
             $key = $1; $dmStart = $2; $dmStop = $3; $desc = $4;
 	    $addEntry = 0;
 	    # See if any of the positions are within this domain
@@ -203,7 +205,8 @@ sub domainsAfterPosition {
     map{ $skipList{$_} = 1; } @skipThese;
     foreach $line ( split /\n/, $self->entireRecord() ) {
 	chomp $line;
-	if ( $line =~ /FT\s+(\S+)\s+(\d+)\s+(\d+)\s+(.*)/ && $3 > $position ) { 
+#	if ( $line =~ /FT\s+(\S+)\s+(\d+)\s+(\d+)\s+(.*)/ && $3 > $position ) { 
+	if ( $line =~ /FT\s+(\S+)\s+(\d+)[\s.]+(\d+)\s*(.*)/ && $3 > $position ) { 
 	    $key = $1; $dmStart = $2; $dmStop = $3; $desc = $4;
 	    next if ( defined $skipList{$key} );
 	    push @domains, "$key\t($dmStart, $dmStop)\t$desc";
