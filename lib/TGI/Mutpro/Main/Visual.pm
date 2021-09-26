@@ -153,6 +153,7 @@ sub process {
 sub addPDB {
     my ( $this ) = @_;
 	my $pdbfile = $this->{_PDB_DIR}."/".$this->{_PDB}.".pdb";
+    print "Local PDB file: " . $pdbfile;
 	my $download;
 	unless( -e $pdbfile ) {
 		print STDOUT "Downloading ".$this->{_PDB}.".pdb\n";
@@ -535,7 +536,7 @@ sub makePyMOLScript {
 	#viewer
 	$fh->print( "reinitialize everything;\n" );
 	#$this->addPDB(  );
-	if ( -e $this->{_PDB_DIR}."/".$this->{_PDB} ) {
+	if ( -e $this->{_PDB_DIR}."/".$this->{_PDB}.".pdb" ) {
 		$fh->print( "load ".$this->{_PDB_DIR}."/".$this->{_PDB}.".pdb;\n" );
 	} else {
 		$fh->print( "load http://www.rcsb.org/pdb/files/".$this->{_PDB}.".pdb;\n" );

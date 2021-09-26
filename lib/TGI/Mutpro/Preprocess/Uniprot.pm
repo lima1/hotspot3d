@@ -209,6 +209,7 @@ sub domainsAfterPosition {
 	if ( $line =~ /FT\s+(\S+)\s+(\d+)[\s.]+(\d+)\s*(.*)/ && $3 > $position ) { 
 	    $key = $1; $dmStart = $2; $dmStop = $3; $desc = $4;
 	    next if ( defined $skipList{$key} );
+        if ( $desc =~ /^\s*$/ ) { $desc = $key . ":" . $dmStart . "-" . $dmStop; }
 	    push @domains, "$key\t($dmStart, $dmStop)\t$desc";
 	}
     }
