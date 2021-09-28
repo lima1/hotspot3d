@@ -964,7 +964,7 @@ sub setAcceptableMutationTypes {
 	push @{$this->{'acceptable_types'}} , "In_Frame_Ins";
 	push @{$this->{'acceptable_types'}} , "In_Frame_Del";
 	if ( not $this->{'skip_silent'} ) {
-		push @{$this->{'accepatble_types'}} , "Silent";
+		push @{$this->{'acceptable_types'}} , "Silent";
 	}
 	return 1;
 }
