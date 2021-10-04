@@ -23,7 +23,7 @@ use Archive::Extract;
 use TGI::Mutpro::Preprocess::Uniprot;
 
 my $LATESTGRCH = 38;
-my $LATEST38RELEASE = 87; #TODO will need to be updated as Ensembl has new releases
+my $LATEST38RELEASE = 104; #TODO will need to be updated as Ensembl has new releases
 my $EARLIEST38RELEASE = 76;
 my $LATEST37RELEASE = 75;
 my $EARLIEST37RELEASE = 55;
@@ -362,8 +362,8 @@ Usage: hotspot3d trans [options]
                              OPTIONAL
 --blat                       Installation of blat to use (defaults to your system default)
 --grch                       Genome build (37 or 38), defaults to 38 or according to --release input
---release                    Ensembl release verion (55-87), defaults to 87 or to the latest release according to --grch input
-                                 Note that releases 55-75 correspond to GRCh37 & 76-87 correspond to GRCh38
+--release                    Ensembl release verion (55-104), defaults to 104 or to the latest release according to --grch input
+                                 Note that releases 55-75 correspond to GRCh37 & 76-104 correspond to GRCh38
 
 --help                       this message
 
